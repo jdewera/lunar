@@ -9,7 +9,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace Lunar.SymbolResolution;
 
-internal sealed class SymbolLookup
+internal class SymbolLookup
 {
     private readonly string _pdbFilePath;
     private readonly IDictionary<string, int> _symbolCache;

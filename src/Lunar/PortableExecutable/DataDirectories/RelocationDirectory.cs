@@ -7,7 +7,7 @@ using Lunar.PortableExecutable.Records;
 
 namespace Lunar.PortableExecutable.DataDirectories;
 
-internal sealed class RelocationDirectory : DataDirectoryBase
+internal class RelocationDirectory : DataDirectoryBase
 {
     internal RelocationDirectory(Memory<byte> imageBytes, PEHeaders headers) : base(imageBytes, headers, headers.PEHeader!.BaseRelocationTableDirectory) { }
 

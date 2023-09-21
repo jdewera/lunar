@@ -2,7 +2,7 @@ using Lunar.Native.Enums;
 
 namespace Lunar.PortableExecutable.Records;
 
-internal sealed record Relocation
+internal record Relocation
 {
     internal int Offset { get; init; }
 
