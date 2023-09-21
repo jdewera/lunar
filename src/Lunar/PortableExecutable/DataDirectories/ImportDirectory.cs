@@ -42,7 +42,7 @@ internal class ImportDirectory : DataDirectoryBase
             var thunkTableOffset = descriptor.OriginalFirstThunk == 0 ? offsetTableOffset : RvaToOffset(descriptor.OriginalFirstThunk);
             var functions = GetImportedFunctions(offsetTableOffset, thunkTableOffset);
 
-            yield return new ImportDescriptor { Functions = functions, Name = name };
+            yield return new ImportDescriptor(functions, name);
         }
     }
 
@@ -59,7 +59,7 @@ internal class ImportDirectory : DataDirectoryBase
         var nameLength = ImageBytes.Span[nameOffset..].IndexOf(byte.MinValue);
         var name = Encoding.UTF8.GetString(ImageBytes.Span.Slice(nameOffset, nameLength));
 
-        return new ImportedFunction { Name = name, Ordinal = ordinal };
+        return new ImportedFunction(name, 0, ordinal);
     }
 
     private IEnumerable<ImportedFunction> GetImportedFunctions(int offsetTableOffset, int thunkTableOffset)
@@ -85,7 +85,7 @@ internal class ImportDirectory : DataDirectoryBase
                 if ((thunk & int.MinValue) != 0)
                 {
                     var ordinal = thunk & ushort.MaxValue;
-                    yield return new ImportedFunction { Offset = functionOffset, Ordinal = ordinal };
+                    yield return new ImportedFunction(null, functionOffset, ordinal);
                 }
                 else
                 {
@@ -111,7 +111,7 @@ internal class ImportDirectory : DataDirectoryBase
                 if ((thunk & long.MinValue) != 0)
                 {
                     var ordinal = thunk & ushort.MaxValue;
-                    yield return new ImportedFunction { Offset = functionOffset, Ordinal = (int) ordinal };
+                    yield return new ImportedFunction(null, functionOffset, (int) ordinal);
                 }
                 else
                 {
