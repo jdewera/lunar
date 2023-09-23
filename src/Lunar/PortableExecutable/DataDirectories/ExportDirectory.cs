@@ -84,7 +84,7 @@ internal class ExportDirectory : DataDirectoryBase
 
         if (functionAddress < lowerBound || functionAddress > upperBound)
         {
-            return new ExportedFunction(null, functionAddress);
+            return new ExportedFunction(functionAddress, null);
         }
 
         // Read the forwarder string
@@ -93,6 +93,6 @@ internal class ExportDirectory : DataDirectoryBase
         var forwarderStringLength = ImageBytes.Span[forwarderStringOffset..].IndexOf(byte.MinValue);
         var forwarderString = Encoding.UTF8.GetString(ImageBytes.Span.Slice(forwarderStringOffset, forwarderStringLength));
 
-        return new ExportedFunction(forwarderString, functionAddress);
+        return new ExportedFunction(functionAddress, forwarderString);
     }
 }

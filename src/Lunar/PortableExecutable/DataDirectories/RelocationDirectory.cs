@@ -43,7 +43,7 @@ internal class RelocationDirectory : DataDirectoryBase
                 var type = (ushort) relocation >> 12;
                 var offset = relocation & 0xFFF;
 
-                yield return new Relocation(RvaToOffset(relocationBlock.VirtualAddress) + offset, (RelocationType) type);
+                yield return new Relocation((RelocationType) type, RvaToOffset(relocationBlock.VirtualAddress) + offset);
             }
 
             currentOffset += relocationBlock.SizeOfBlock;

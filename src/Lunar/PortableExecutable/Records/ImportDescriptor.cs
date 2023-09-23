@@ -1,3 +1,3 @@
 ﻿namespace Lunar.PortableExecutable.Records;
 
-internal record ImportDescriptor(IEnumerable<ImportedFunction> Functions, string Name);
+internal record ImportDescriptor(string Name, IEnumerable<ImportedFunction> Functions);

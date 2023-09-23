@@ -1,3 +1,3 @@
 ﻿namespace Lunar.PortableExecutable.Records;
 
-internal record ExportedFunction(string? ForwarderString, int RelativeAddress);
+internal record ExportedFunction(int RelativeAddress, string? ForwarderString);
