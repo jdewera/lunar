@@ -14,16 +14,16 @@ internal class ApiSetMap
         _address = GetLocalAddress();
     }
 
-    internal string? ResolveApiSetName(string name, string? parentName)
+    internal string? ResolveApiSet(string apiSet, string? parentName)
     {
         // Read the namespace
 
         var @namespace = Marshal.PtrToStructure<ApiSetNamespace>(_address);
 
-        // Hash the name without the patch number and suffix
+        // Hash the API set without the patch number and suffix
 
-        var charactersToHash = name[..name.LastIndexOf("-", StringComparison.Ordinal)];
-        var nameHash = charactersToHash.Aggregate(0, (currentHash, character) => currentHash * @namespace.HashFactor + char.ToLower(character));
+        var charactersToHash = apiSet[..apiSet.LastIndexOf("-", StringComparison.Ordinal)];
+        var apiSetHash = charactersToHash.Aggregate(0, (currentHash, character) => currentHash * @namespace.HashFactor + char.ToLower(character));
 
         // Search the namespace for the corresponding hash entry
 
@@ -39,7 +39,7 @@ internal class ApiSetMap
             var hashEntryAddress = _address + @namespace.HashOffset + Unsafe.SizeOf<ApiSetHashEntry>() * middle;
             var hashEntry = Marshal.PtrToStructure<ApiSetHashEntry>(hashEntryAddress);
 
-            if (nameHash == hashEntry.Hash)
+            if (apiSetHash == hashEntry.Hash)
             {
                 // Read the namespace entry name
 
@@ -91,7 +91,7 @@ internal class ApiSetMap
                 return valueEntryName;
             }
 
-            if ((uint) nameHash < (uint) hashEntry.Hash)
+            if ((uint) apiSetHash < (uint) hashEntry.Hash)
             {
                 high = middle - 1;
             }
