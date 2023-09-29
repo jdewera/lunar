@@ -10,7 +10,7 @@ internal class ExportDirectory : DataDirectoryBase
 {
     internal ExportDirectory(Memory<byte> imageBytes, PEHeaders headers) : base(imageBytes, headers, headers.PEHeader!.ExportTableDirectory) { }
 
-    internal ExportedFunction? GetExportedFunction(string name)
+    internal ExportedFunction? GetExportedFunction(string functionName)
     {
         if (!IsValid)
         {
@@ -35,7 +35,7 @@ internal class ExportDirectory : DataDirectoryBase
             var currentNameLength = ImageBytes.Span[currentNameOffset..].IndexOf(byte.MinValue);
             var currentName = Encoding.UTF8.GetString(ImageBytes.Span.Slice(currentNameOffset, currentNameLength));
 
-            if (name.Equals(currentName, StringComparison.OrdinalIgnoreCase))
+            if (functionName.Equals(currentName, StringComparison.OrdinalIgnoreCase))
             {
                 // Read the ordinal
 
@@ -45,7 +45,7 @@ internal class ExportDirectory : DataDirectoryBase
                 return GetExportedFunction(ordinal);
             }
 
-            if (string.CompareOrdinal(name, currentName) < 0)
+            if (string.CompareOrdinal(functionName, currentName) < 0)
             {
                 high = middle - 1;
             }
@@ -58,7 +58,7 @@ internal class ExportDirectory : DataDirectoryBase
         return null;
     }
 
-    internal ExportedFunction? GetExportedFunction(int ordinal)
+    internal ExportedFunction? GetExportedFunction(int functionOrdinal)
     {
         if (!IsValid)
         {
@@ -69,12 +69,12 @@ internal class ExportDirectory : DataDirectoryBase
 
         var exportDirectory = MemoryMarshal.Read<ImageExportDirectory>(ImageBytes.Span[DirectoryOffset..]);
 
-        if ((ordinal -= exportDirectory.Base) >= exportDirectory.NumberOfFunctions)
+        if ((functionOrdinal -= exportDirectory.Base) >= exportDirectory.NumberOfFunctions)
         {
             return null;
         }
 
-        var functionAddressOffset = RvaToOffset(exportDirectory.AddressOfFunctions) + sizeof(int) * ordinal;
+        var functionAddressOffset = RvaToOffset(exportDirectory.AddressOfFunctions) + sizeof(int) * functionOrdinal;
         var functionAddress = MemoryMarshal.Read<int>(ImageBytes.Span[functionAddressOffset..]);
 
         // Check if the function is forwarded
