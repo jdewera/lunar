@@ -126,6 +126,78 @@ public class LibraryMapper
         }
     }
 
+    /// <summary>
+    /// Unmaps the DLL from the process
+    /// </summary>
+    public void UnmapLibrary()
+    {
+        if (DllBaseAddress == 0)
+        {
+            return;
+        }
+
+        var topLevelException = default(Exception);
+
+        try
+        {
+            CallInitialisationRoutines(DllReason.ProcessDetach);
+        }
+        catch (Exception exception)
+        {
+            topLevelException ??= exception;
+        }
+
+        try
+        {
+            ReleaseTlsData();
+        }
+        catch (Exception exception)
+        {
+            topLevelException ??= exception;
+        }
+
+        try
+        {
+            RemoveExceptionHandlers();
+        }
+        catch (Exception exception)
+        {
+            topLevelException ??= exception;
+        }
+
+        try
+        {
+            FreeDependencies();
+        }
+        catch (Exception exception)
+        {
+            topLevelException ??= exception;
+        }
+
+        try
+        {
+            FreeImage();
+        }
+        catch (Exception exception)
+        {
+            topLevelException ??= exception;
+        }
+
+        try
+        {
+            FreeLoaderEntry();
+        }
+        catch (Exception exception)
+        {
+            topLevelException ??= exception;
+        }
+
+        if (topLevelException is not null)
+        {
+            throw topLevelException;
+        }
+    }
+
     private void AllocateImage()
     {
         DllBaseAddress = _processContext.Process.AllocateBuffer(_peImage.Headers.PEHeader!.SizeOfImage, ProtectionType.ReadOnly);
