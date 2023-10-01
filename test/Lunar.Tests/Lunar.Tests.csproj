@@ -20,4 +20,8 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\Lunar\Lunar.csproj" />
+    </ItemGroup>
+
 </Project>
