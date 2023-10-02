@@ -87,7 +87,6 @@ internal class ProcessContext
             var pointer = Architecture == Architecture.X86 ? Process.ReadStruct<int>(returnAddress) : (nint) Process.ReadStruct<long>(returnAddress);
             return Unsafe.As<nint, T>(ref pointer);
         }
-
         finally
         {
             Executor.IgnoreExceptions(() => Process.FreeBuffer(returnAddress));
@@ -137,7 +136,7 @@ internal class ProcessContext
 
     internal void RecordModuleLoad(nint moduleAddress, string moduleFilePath)
     {
-        _moduleCache.TryAdd(Path.GetFileName(moduleFilePath), new Module(moduleAddress, new PEImage(File.ReadAllBytes(moduleFilePath))));
+        _moduleCache.Add(Path.GetFileName(moduleFilePath), new Module(moduleAddress, new PEImage(File.ReadAllBytes(moduleFilePath))));
     }
 
     internal string ResolveModuleName(string moduleName, string? parentName)
@@ -230,17 +229,18 @@ internal class ProcessContext
 
             if (Architecture == Architecture.X86)
             {
-                // Redirect the file path to the WOW64 directory
-
                 moduleFilePath = moduleFilePath.Replace("System32", "SysWOW64", StringComparison.OrdinalIgnoreCase);
             }
 
-            if (!moduleName.Equals(Path.GetFileName(moduleFilePath), StringComparison.OrdinalIgnoreCase))
+            if (moduleName.Equals(Path.GetFileName(moduleFilePath), StringComparison.OrdinalIgnoreCase))
+            {
+                _moduleCache.Add(moduleName, new Module(address, new PEImage(File.ReadAllBytes(moduleFilePath))));
+            }
+            else
             {
                 continue;
             }
 
-            _moduleCache.TryAdd(moduleName, new Module(address, new PEImage(File.ReadAllBytes(moduleFilePath))));
             return _moduleCache[moduleName];
         }
 
@@ -253,8 +253,6 @@ internal class ProcessContext
         {
             var forwardedData = forwarderString.Split(".");
             var (moduleAddress, peImage) = GetModule($"{forwardedData[0]}.dll", parentName);
-
-            // Retrieve the forwarded function
 
             ExportedFunction? forwardedFunction;
 

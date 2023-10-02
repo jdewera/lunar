@@ -88,7 +88,6 @@ internal class FileResolver
 
         // Search the directories listed in the PATH environment variable
 
-        var path = Environment.GetEnvironmentVariable("PATH");
-        return path?.Split(";").Where(Directory.Exists).Select(directory => Path.Combine(directory, fileName)).FirstOrDefault(File.Exists);
+        return Environment.GetEnvironmentVariable("PATH")?.Split(";").Where(Directory.Exists).Select(directory => Path.Combine(directory, fileName)).FirstOrDefault(File.Exists);
     }
 }
