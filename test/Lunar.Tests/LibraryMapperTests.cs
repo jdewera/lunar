@@ -5,6 +5,7 @@ namespace Lunar.Tests;
 
 public class LibraryMapperTests : IDisposable
 {
+    private const string _baseTestBinaryDirectoryPath = @"..\..\..\..\..\bin\TestBinaries";
     private Process _process = null!;
 
     public void Dispose()
@@ -22,7 +23,7 @@ public class LibraryMapperTests : IDisposable
     {
         // Arrange
 
-        const string testBinaryDirectoryPath = @"..\..\..\TestBinaries\bin\x64\Release";
+        var testBinaryDirectoryPath = Path.Combine(_baseTestBinaryDirectoryPath, "x64", "Release");
         var dllFilePath = Path.Combine(testBinaryDirectoryPath, dllName);
 
         CreateTestProcess(testBinaryDirectoryPath);
@@ -47,7 +48,7 @@ public class LibraryMapperTests : IDisposable
     {
         // Arrange
 
-        const string testBinaryDirectoryPath = @"..\..\..\TestBinaries\bin\x64\Release";
+        var testBinaryDirectoryPath = Path.Combine(_baseTestBinaryDirectoryPath, "x64", "Release");
         var dllFilePath = Path.Combine(testBinaryDirectoryPath, dllName);
 
         CreateTestProcess(testBinaryDirectoryPath);
@@ -73,7 +74,7 @@ public class LibraryMapperTests : IDisposable
     {
         // Arrange
 
-        const string testBinaryDirectoryPath = @"..\..\..\TestBinaries\bin\x86\Release";
+        var testBinaryDirectoryPath = Path.Combine(_baseTestBinaryDirectoryPath, "x86", "Release");
         var dllFilePath = Path.Combine(testBinaryDirectoryPath, dllName);
 
         CreateTestProcess(testBinaryDirectoryPath);
@@ -99,7 +100,7 @@ public class LibraryMapperTests : IDisposable
     {
         // Arrange
 
-        const string testBinaryDirectoryPath = @"..\..\..\TestBinaries\bin\x86\Release";
+        var testBinaryDirectoryPath = Path.Combine(_baseTestBinaryDirectoryPath, "x86", "Release");
         var dllFilePath = Path.Combine(testBinaryDirectoryPath, dllName);
 
         CreateTestProcess(testBinaryDirectoryPath);

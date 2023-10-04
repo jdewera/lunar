@@ -22,11 +22,11 @@ set(MSVC_COMPILE_FLAGS /guard:cf /GL /GS /Oi /Oy /O2)
 
 set(MSVC_LINKER_FLAGS /INCREMENTAL:NO /LARGEADDRESSAWARE /LTCG /OPT:ICF /OPT:REF)
 
-add_executable(Target ../src/Target.cpp)
-add_library(Basic SHARED ../src/Basic.cpp)
-add_library(Exception SHARED ../src/Exception.cpp)
-add_library(StaticTls SHARED ../src/StaticTls.cpp)
-add_library(TlsCallback SHARED ../src/TlsCallback.cpp)
+add_executable(Target ../test/TestBinaries/Executables/Target.cpp)
+add_library(Basic SHARED ../test/TestBinaries/Libraries/Basic.cpp)
+add_library(Exception SHARED ../test/TestBinaries/Libraries/Exception.cpp)
+add_library(StaticTls SHARED ../test/TestBinaries/Libraries/StaticTls.cpp)
+add_library(TlsCallback SHARED ../test/TestBinaries/Libraries/TlsCallback.cpp)
 
 target_compile_options(Target PUBLIC ${MSVC_COMPILE_FLAGS})
 target_compile_options(Basic PUBLIC ${MSVC_COMPILE_FLAGS})
