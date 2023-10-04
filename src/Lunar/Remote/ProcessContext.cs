@@ -136,7 +136,7 @@ internal class ProcessContext
 
     internal void RecordModuleLoad(nint moduleAddress, string moduleFilePath)
     {
-        _moduleCache.Add(Path.GetFileName(moduleFilePath), new Module(moduleAddress, new PEImage(File.ReadAllBytes(moduleFilePath))));
+        _moduleCache.TryAdd(Path.GetFileName(moduleFilePath), new Module(moduleAddress, new PEImage(File.ReadAllBytes(moduleFilePath))));
     }
 
     internal string ResolveModuleName(string moduleName, string? parentName)
@@ -234,7 +234,7 @@ internal class ProcessContext
 
             if (moduleName.Equals(Path.GetFileName(moduleFilePath), StringComparison.OrdinalIgnoreCase))
             {
-                _moduleCache.Add(moduleName, new Module(address, new PEImage(File.ReadAllBytes(moduleFilePath))));
+                _moduleCache.TryAdd(moduleName, new Module(address, new PEImage(File.ReadAllBytes(moduleFilePath))));
             }
             else
             {
