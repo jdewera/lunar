@@ -233,7 +233,7 @@ public class LibraryMapper
                 // Write the function address into the import address table
 
                 var functionAddress = functionName is null ? _processContext.GetFunctionAddress(importDescriptor.Name, functionOrdinal) : _processContext.GetFunctionAddress(importDescriptor.Name, functionName);
-                MemoryMarshal.Write(_dllBytes.Span[functionOffset..], ref functionAddress);
+                MemoryMarshal.Write(_dllBytes.Span[functionOffset..], in functionAddress);
             }
         }
     }
@@ -470,7 +470,7 @@ public class LibraryMapper
                 }
 
                 var relocationValue = MemoryMarshal.Read<uint>(_dllBytes.Span[relocation.Offset..]) + delta;
-                MemoryMarshal.Write(_dllBytes.Span[relocation.Offset..], ref relocationValue);
+                MemoryMarshal.Write(_dllBytes.Span[relocation.Offset..], in relocationValue);
             }
         }
         else
@@ -485,7 +485,7 @@ public class LibraryMapper
                 }
 
                 var relocationValue = MemoryMarshal.Read<ulong>(_dllBytes.Span[relocation.Offset..]) + delta;
-                MemoryMarshal.Write(_dllBytes.Span[relocation.Offset..], ref relocationValue);
+                MemoryMarshal.Write(_dllBytes.Span[relocation.Offset..], in relocationValue);
             }
         }
     }

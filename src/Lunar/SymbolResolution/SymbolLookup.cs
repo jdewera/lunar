@@ -57,7 +57,7 @@ internal class SymbolLookup
 
             var symbolInfoBytes = (stackalloc byte[(Unsafe.SizeOf<SymbolInfo>() + sizeof(char) * Constants.MaxSymbolName + sizeof(long) - 1) / sizeof(long)]);
             var symbolInfo = new SymbolInfo { SizeOfStruct = Unsafe.SizeOf<SymbolInfo>(), MaxNameLen = Constants.MaxSymbolName };
-            MemoryMarshal.Write(symbolInfoBytes, ref symbolInfo);
+            MemoryMarshal.Write(symbolInfoBytes, in symbolInfo);
 
             if (!Dbghelp.SymFromName(currentProcessHandle, symbolName, out Unsafe.As<byte, SymbolInfo>(ref symbolInfoBytes[0])))
             {
