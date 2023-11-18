@@ -5,14 +5,12 @@ project(TestBinaries)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Release)
 
-# /guard:cf - Enables control flow guard
 # /GL       - Enables cross module optimisations by delaying code generation to link time
-# /GS       - Adds a security check to help detect stack buffer overruns
 # /Oi       - Enables intrinsic functions
 # /Oy       - Suppresses creation of frame pointers on the call stack
 # /O2       - Maximum optimisation
 
-set(MSVC_COMPILE_FLAGS /guard:cf /GL /GS /Oi /Oy /O2)
+set(MSVC_COMPILE_FLAGS /GS /Oi /Oy /O2)
 
 # /INCREMENTAL:NO    - Disables incremental linking
 # /LARGEADDRESSAWARE - Tells the linker that the application can handle addresses larger than 2 gigabytes
