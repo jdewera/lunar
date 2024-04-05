@@ -402,16 +402,15 @@ public class LibraryMapper
 
         foreach (var sectionHeader in sectionHeaders)
         {
-            if (sectionHeader.SizeOfRawData == 0)
-            {
-                continue;
-            }
-
-            // Map the raw section
-
             var sectionAddress = DllBaseAddress + sectionHeader.VirtualAddress;
+
+            // Map the raw section if not empty
+
+            if (sectionHeader.SizeOfRawData > 0)
+            {
             var sectionBytes = _dllBytes.Span.Slice(sectionHeader.PointerToRawData, sectionHeader.SizeOfRawData);
             _processContext.Process.WriteSpan(sectionAddress, sectionBytes);
+            }
 
             // Determine the protection to apply to the section
 
