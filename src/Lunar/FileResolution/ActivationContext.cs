@@ -25,7 +25,6 @@ internal class ActivationContext
         }
 
         // Search the manifest tree that holds the dependency references
-
         var @namespace = _manifest.Root.GetDefaultNamespace();
         var elementName1 = @namespace + "dependency";
         var elementName2 = @namespace + "dependentAssembly";
@@ -34,7 +33,6 @@ internal class ActivationContext
         foreach (var dependency in _manifest.Descendants(elementName1).Elements(elementName2).Elements(elementName3))
         {
             // Parse the dependency attributes
-
             var architecture = dependency.Attribute("processorArchitecture")?.Value;
             var language = dependency.Attribute("language")?.Value;
             var name = dependency.Attribute("name")?.Value;
@@ -57,7 +55,6 @@ internal class ActivationContext
             }
 
             // Query the cache for matching directories
-
             var dependencyHash = $"{architecture}{name.ToLower()}{token}".GetHashCode();
 
             if (!_directoryCache.Value.Contains(dependencyHash))
@@ -68,7 +65,6 @@ internal class ActivationContext
             var matchingDirectories = _directoryCache.Value[dependencyHash].Where(directory => directory.Language.Equals(language, StringComparison.OrdinalIgnoreCase));
 
             // Search for the directory that holds the dependency
-
             var dependencyVersion = new Version(version);
             var matchingDirectory = dependencyVersion is { Build: 0, Revision: 0 } ? matchingDirectories.Where(directory => directory.Version.Major == dependencyVersion.Major && directory.Version.Minor == dependencyVersion.Minor).MaxBy(directory => directory.Version) : matchingDirectories.FirstOrDefault(directory => directory.Version == dependencyVersion);
 
@@ -100,7 +96,6 @@ internal class ActivationContext
             var version = new Version(nameComponents[^3]);
 
             // Hash the directory name without the version, language and hash
-
             var directoryHash = string.Join(string.Empty, nameComponents[..^3]).GetHashCode();
 
             yield return new ManifestDirectory(directory.FullName, directoryHash, language, version);

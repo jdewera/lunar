@@ -27,11 +27,11 @@ internal abstract class DataDirectoryBase
 
     private protected int VaToRva(int va)
     {
-        return va - (int) Headers.PEHeader!.ImageBase;
+        return va - (int)Headers.PEHeader!.ImageBase;
     }
 
     private protected int VaToRva(long va)
     {
-        return (int) (va - (long) Headers.PEHeader!.ImageBase);
+        return (int)(va - (long)Headers.PEHeader!.ImageBase);
     }
 }

@@ -19,7 +19,6 @@ internal class TlsDirectory : DataDirectoryBase
         if (Headers.PEHeader!.Magic == PEMagic.PE32)
         {
             // Read the TLS directory
-
             var tlsDirectory = MemoryMarshal.Read<ImageTlsDirectory32>(ImageBytes.Span[DirectoryOffset..]);
 
             if (tlsDirectory.AddressOfCallBacks == 0)
@@ -30,7 +29,6 @@ internal class TlsDirectory : DataDirectoryBase
             for (var i = 0;; i++)
             {
                 // Read the callback address
-
                 var callbackAddressOffset = RvaToOffset(VaToRva(tlsDirectory.AddressOfCallBacks)) + sizeof(int) * i;
                 var callbackAddress = MemoryMarshal.Read<int>(ImageBytes.Span[callbackAddressOffset..]);
 
@@ -45,7 +43,6 @@ internal class TlsDirectory : DataDirectoryBase
         else
         {
             // Read the TLS directory
-
             var tlsDirectory = MemoryMarshal.Read<ImageTlsDirectory64>(ImageBytes.Span[DirectoryOffset..]);
 
             if (tlsDirectory.AddressOfCallBacks == 0)
@@ -56,7 +53,6 @@ internal class TlsDirectory : DataDirectoryBase
             for (var i = 0;; i++)
             {
                 // Read the callback address
-
                 var callbackAddressOffset = RvaToOffset(VaToRva(tlsDirectory.AddressOfCallBacks)) + sizeof(long) * i;
                 var callbackAddress = MemoryMarshal.Read<long>(ImageBytes.Span[callbackAddressOffset..]);
 

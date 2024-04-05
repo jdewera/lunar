@@ -12,7 +12,7 @@ namespace Lunar.SymbolResolution;
 internal class SymbolLookup
 {
     private readonly string _pdbFilePath;
-    private readonly IDictionary<string, int> _symbolCache;
+    private readonly Dictionary<string, int> _symbolCache;
 
     internal SymbolLookup(Architecture architecture)
     {
@@ -30,7 +30,6 @@ internal class SymbolLookup
         var currentProcessHandle = new SafeProcessHandle(-1, false);
 
         // Load the PDB into a native symbol handler
-
         if (!Dbghelp.SymSetOptions(SymbolOptions.UndecorateName).HasFlag(SymbolOptions.UndecorateName))
         {
             throw new Win32Exception();
@@ -46,7 +45,7 @@ internal class SymbolLookup
             const int pseudoAddress = 0x1000;
 
             var pdbFileSize = new FileInfo(_pdbFilePath).Length;
-            var symbolTableAddress = Dbghelp.SymLoadModule(currentProcessHandle, 0, _pdbFilePath, 0, pseudoAddress, (int) pdbFileSize, 0, 0);
+            var symbolTableAddress = Dbghelp.SymLoadModule(currentProcessHandle, 0, _pdbFilePath, 0, pseudoAddress, (int)pdbFileSize, 0, 0);
 
             if (symbolTableAddress == 0)
             {
@@ -54,7 +53,6 @@ internal class SymbolLookup
             }
 
             // Retrieve the symbol info
-
             var symbolInfoBytes = (stackalloc byte[(Unsafe.SizeOf<SymbolInfo>() + sizeof(char) * Constants.MaxSymbolName + sizeof(long) - 1) / sizeof(long)]);
             var symbolInfo = new SymbolInfo { SizeOfStruct = Unsafe.SizeOf<SymbolInfo>(), MaxNameLen = Constants.MaxSymbolName };
             MemoryMarshal.Write(symbolInfoBytes, in symbolInfo);
@@ -65,7 +63,7 @@ internal class SymbolLookup
             }
 
             symbolInfo = MemoryMarshal.Read<SymbolInfo>(symbolInfoBytes);
-            offset = (int) (symbolInfo.Address - pseudoAddress);
+            offset = (int)(symbolInfo.Address - pseudoAddress);
             _symbolCache.Add(symbolName, offset);
         }
         finally

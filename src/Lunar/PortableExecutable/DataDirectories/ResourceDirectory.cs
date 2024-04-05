@@ -21,7 +21,6 @@ internal class ResourceDirectory : DataDirectoryBase
         }
 
         // Search the resource directory for the manifest entry
-
         var resourceDirectory = MemoryMarshal.Read<ImageResourceDirectory>(ImageBytes.Span[DirectoryOffset..]);
         var resourceCount = resourceDirectory.NumberOfIdEntries + resourceDirectory.NumberOfNameEntries;
 
@@ -30,7 +29,6 @@ internal class ResourceDirectory : DataDirectoryBase
             var baseEntryOffset = DirectoryOffset + Unsafe.SizeOf<ImageResourceDirectory>();
 
             // Read the first level resource entry
-
             var firstLevelEntryOffset = baseEntryOffset + Unsafe.SizeOf<ImageResourceDirectoryEntry>() * i;
             var firstLevelEntry = MemoryMarshal.Read<ImageResourceDirectoryEntry>(ImageBytes.Span[firstLevelEntryOffset..]);
 
@@ -40,7 +38,6 @@ internal class ResourceDirectory : DataDirectoryBase
             }
 
             // Read the second level resource entry
-
             var secondLevelEntryOffset = baseEntryOffset + (firstLevelEntry.OffsetToData & int.MaxValue);
             var secondLevelEntry = MemoryMarshal.Read<ImageResourceDirectoryEntry>(ImageBytes.Span[secondLevelEntryOffset..]);
 
@@ -50,19 +47,16 @@ internal class ResourceDirectory : DataDirectoryBase
             }
 
             // Read the third level resource entry
-
             var thirdLevelEntryOffset = baseEntryOffset + (secondLevelEntry.OffsetToData & int.MaxValue);
             var thirdLevelEntry = MemoryMarshal.Read<ImageResourceDirectoryEntry>(ImageBytes.Span[thirdLevelEntryOffset..]);
 
             // Read the manifest
-
             var manifestEntryOffset = DirectoryOffset + thirdLevelEntry.OffsetToData;
             var manifestEntry = MemoryMarshal.Read<ImageResourceDataEntry>(ImageBytes.Span[manifestEntryOffset..]);
             var manifestOffset = RvaToOffset(manifestEntry.OffsetToData);
             var manifest = Encoding.UTF8.GetString(ImageBytes.Span.Slice(manifestOffset, manifestEntry.Size));
 
             // Sanitise the manifest to ensure it can be parsed correctly
-
             manifest = Regex.Replace(manifest, @"\""\""([\d\w\.]*)\""\""", @"""$1""", RegexOptions.Compiled | RegexOptions.Multiline);
             manifest = Regex.Replace(manifest, @"^\s+$[\r\n]*", string.Empty, RegexOptions.Compiled | RegexOptions.Multiline);
             manifest = manifest.Replace("SXS_ASSEMBLY_NAME", @"""""");

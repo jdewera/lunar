@@ -213,7 +213,7 @@ public class LibraryMapper
         if (_processContext.Architecture == Architecture.X86)
         {
             _ldrEntryAddress = _processContext.Process.AllocateBuffer(Unsafe.SizeOf<LdrDataTableEntry32>(), ProtectionType.ReadWrite);
-            var loaderEntry = new LdrDataTableEntry32 { DllBase = (int) DllBaseAddress };
+            var loaderEntry = new LdrDataTableEntry32 { DllBase = (int)DllBaseAddress };
             _processContext.Process.WriteStruct(_ldrEntryAddress, loaderEntry);
         }
         else
@@ -231,7 +231,6 @@ public class LibraryMapper
             foreach (var (functionName, functionOrdinal, functionOffset) in importDescriptor.Functions)
             {
                 // Write the function address into the import address table
-
                 var functionAddress = functionName is null ? _processContext.GetFunctionAddress(importDescriptor.Name, functionOrdinal) : _processContext.GetFunctionAddress(importDescriptor.Name, functionName);
                 MemoryMarshal.Write(_dllBytes.Span[functionOffset..], in functionAddress);
             }
@@ -246,7 +245,6 @@ public class LibraryMapper
         }
 
         // Call the entry point of any TLS callbacks
-
         foreach (var callbackAddress in _peImage.TlsDirectory.GetTlsCallbacks().Select(callBack => DllBaseAddress + callBack.RelativeAddress))
         {
             _processContext.CallRoutine(callbackAddress, CallingConvention.StdCall, DllBaseAddress, reason, 0);
@@ -258,7 +256,6 @@ public class LibraryMapper
         }
 
         // Call the DLL entry point
-
         var entryPointAddress = DllBaseAddress + _peImage.Headers.PEHeader!.AddressOfEntryPoint;
 
         if (!_processContext.CallRoutine<bool>(entryPointAddress, CallingConvention.StdCall, DllBaseAddress, reason, 0))
@@ -282,7 +279,6 @@ public class LibraryMapper
         foreach (var (dependencyName, _) in _peImage.ImportDirectory.GetImportDescriptors())
         {
             // Free the dependency using the Windows loader
-
             var dependencyAddress = _processContext.GetModuleAddress(dependencyName);
 
             if (!_processContext.CallRoutine<bool>(_processContext.GetFunctionAddress("kernel32.dll", "FreeLibrary"), CallingConvention.StdCall, dependencyAddress))
@@ -353,7 +349,6 @@ public class LibraryMapper
         foreach (var (dependencyName, _) in _peImage.ImportDirectory.GetImportDescriptors())
         {
             // Write the dependency file path into the process
-
             var dependencyFilePath = _fileResolver.ResolveFilePath(_processContext.ResolveModuleName(dependencyName, null), activationContext);
 
             if (dependencyFilePath is null)
@@ -368,7 +363,6 @@ public class LibraryMapper
                 _processContext.Process.WriteString(dependencyFilePathAddress, dependencyFilePath);
 
                 // Load the dependency using the Windows loader
-
                 var dependencyAddress = _processContext.CallRoutine<nint>(_processContext.GetFunctionAddress("kernel32.dll", "LoadLibraryW"), CallingConvention.StdCall, dependencyFilePathAddress);
 
                 if (dependencyAddress == 0)
@@ -405,15 +399,13 @@ public class LibraryMapper
             var sectionAddress = DllBaseAddress + sectionHeader.VirtualAddress;
 
             // Map the raw section if not empty
-
             if (sectionHeader.SizeOfRawData > 0)
             {
-            var sectionBytes = _dllBytes.Span.Slice(sectionHeader.PointerToRawData, sectionHeader.SizeOfRawData);
-            _processContext.Process.WriteSpan(sectionAddress, sectionBytes);
+                var sectionBytes = _dllBytes.Span.Slice(sectionHeader.PointerToRawData, sectionHeader.SizeOfRawData);
+                _processContext.Process.WriteSpan(sectionAddress, sectionBytes);
             }
 
             // Determine the protection to apply to the section
-
             ProtectionType sectionProtection;
 
             if (sectionHeader.SectionCharacteristics.HasFlag(SectionCharacteristics.MemExecute))
@@ -442,13 +434,11 @@ public class LibraryMapper
             }
 
             // Calculate the aligned section size
-
             var sectionAlignment = _peImage.Headers.PEHeader!.SectionAlignment;
             var alignedSectionSize = Math.Max(sectionHeader.SizeOfRawData, sectionHeader.VirtualSize);
             alignedSectionSize = alignedSectionSize + sectionAlignment - 1 - (alignedSectionSize + sectionAlignment - 1) % sectionAlignment;
 
             // Adjust the protection of the aligned section
-
             _processContext.Process.ProtectBuffer(sectionAddress, alignedSectionSize, sectionProtection);
         }
     }
@@ -456,10 +446,9 @@ public class LibraryMapper
     private void RelocateImage()
     {
         // Calculate the delta from the preferred base address and perform the needed relocations
-
         if (_processContext.Architecture == Architecture.X86)
         {
-            var delta = (uint) DllBaseAddress - (uint) _peImage.Headers.PEHeader!.ImageBase;
+            var delta = (uint)DllBaseAddress - (uint)_peImage.Headers.PEHeader!.ImageBase;
 
             foreach (var relocation in _peImage.RelocationDirectory.GetRelocations())
             {
@@ -474,7 +463,7 @@ public class LibraryMapper
         }
         else
         {
-            var delta = (ulong) DllBaseAddress - _peImage.Headers.PEHeader!.ImageBase;
+            var delta = (ulong)DllBaseAddress - _peImage.Headers.PEHeader!.ImageBase;
 
             foreach (var relocation in _peImage.RelocationDirectory.GetRelocations())
             {

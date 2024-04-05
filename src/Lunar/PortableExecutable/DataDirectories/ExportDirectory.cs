@@ -18,7 +18,6 @@ internal class ExportDirectory : DataDirectoryBase
         }
 
         // Search the name table for the function
-
         var exportDirectory = MemoryMarshal.Read<ImageExportDirectory>(ImageBytes.Span[DirectoryOffset..]);
 
         var low = 0;
@@ -29,7 +28,6 @@ internal class ExportDirectory : DataDirectoryBase
             var middle = (low + high) / 2;
 
             // Read the current name
-
             var currentNameOffsetOffset = RvaToOffset(exportDirectory.AddressOfNames) + sizeof(int) * middle;
             var currentNameOffset = RvaToOffset(MemoryMarshal.Read<int>(ImageBytes.Span[currentNameOffsetOffset..]));
             var currentNameLength = ImageBytes.Span[currentNameOffset..].IndexOf(byte.MinValue);
@@ -38,7 +36,6 @@ internal class ExportDirectory : DataDirectoryBase
             if (functionName.Equals(currentName, StringComparison.OrdinalIgnoreCase))
             {
                 // Read the ordinal
-
                 var ordinalOffset = RvaToOffset(exportDirectory.AddressOfNameOrdinals) + sizeof(short) * middle;
                 var ordinal = MemoryMarshal.Read<short>(ImageBytes.Span[ordinalOffset..]) + exportDirectory.Base;
 
@@ -66,7 +63,6 @@ internal class ExportDirectory : DataDirectoryBase
         }
 
         // Read the function address
-
         var exportDirectory = MemoryMarshal.Read<ImageExportDirectory>(ImageBytes.Span[DirectoryOffset..]);
 
         if ((functionOrdinal -= exportDirectory.Base) >= exportDirectory.NumberOfFunctions)
@@ -78,7 +74,6 @@ internal class ExportDirectory : DataDirectoryBase
         var functionAddress = MemoryMarshal.Read<int>(ImageBytes.Span[functionAddressOffset..]);
 
         // Check if the function is forwarded
-
         var lowerBound = Headers.PEHeader!.ExportTableDirectory.RelativeVirtualAddress;
         var upperBound = lowerBound + Headers.PEHeader!.ExportTableDirectory.Size;
 
@@ -88,7 +83,6 @@ internal class ExportDirectory : DataDirectoryBase
         }
 
         // Read the forwarder string
-
         var forwarderStringOffset = RvaToOffset(functionAddress);
         var forwarderStringLength = ImageBytes.Span[forwarderStringOffset..].IndexOf(byte.MinValue);
         var forwarderString = Encoding.UTF8.GetString(ImageBytes.Span.Slice(forwarderStringOffset, forwarderStringLength));

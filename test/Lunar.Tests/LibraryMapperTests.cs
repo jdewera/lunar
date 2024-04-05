@@ -22,7 +22,6 @@ public class LibraryMapperTests : IDisposable
     public void MapLibrary_MapsX64Library(string dllName)
     {
         // Arrange
-
         var testBinaryDirectoryPath = Path.Combine(_baseTestBinaryDirectoryPath, "x64", "Release");
         var dllFilePath = Path.Combine(testBinaryDirectoryPath, dllName);
 
@@ -31,11 +30,9 @@ public class LibraryMapperTests : IDisposable
         var libraryMapper = new LibraryMapper(_process, dllFilePath);
 
         // Act
-
         libraryMapper.MapLibrary();
 
         // Assert
-
         Assert.NotEqual(0, libraryMapper.DllBaseAddress);
     }
 
@@ -47,7 +44,6 @@ public class LibraryMapperTests : IDisposable
     public void UnmapLibrary_UnmapsX64Library(string dllName)
     {
         // Arrange
-
         var testBinaryDirectoryPath = Path.Combine(_baseTestBinaryDirectoryPath, "x64", "Release");
         var dllFilePath = Path.Combine(testBinaryDirectoryPath, dllName);
 
@@ -56,12 +52,10 @@ public class LibraryMapperTests : IDisposable
         var libraryMapper = new LibraryMapper(_process, dllFilePath);
 
         // Act
-
         libraryMapper.MapLibrary();
         libraryMapper.UnmapLibrary();
 
         // Assert
-
         Assert.Equal(0, libraryMapper.DllBaseAddress);
     }
 
@@ -73,7 +67,6 @@ public class LibraryMapperTests : IDisposable
     public void MapLibrary_MapsX86Library(string dllName)
     {
         // Arrange
-
         var testBinaryDirectoryPath = Path.Combine(_baseTestBinaryDirectoryPath, "x86", "Release");
         var dllFilePath = Path.Combine(testBinaryDirectoryPath, dllName);
 
@@ -83,11 +76,9 @@ public class LibraryMapperTests : IDisposable
         var libraryMapper = new LibraryMapper(_process, dllFilePath);
 
         // Act
-
         libraryMapper.MapLibrary();
 
         // Assert
-
         Assert.NotEqual(0, libraryMapper.DllBaseAddress);
     }
 
@@ -99,7 +90,6 @@ public class LibraryMapperTests : IDisposable
     public void UnmapLibrary_UnmapsX86Library(string dllName)
     {
         // Arrange
-
         var testBinaryDirectoryPath = Path.Combine(_baseTestBinaryDirectoryPath, "x86", "Release");
         var dllFilePath = Path.Combine(testBinaryDirectoryPath, dllName);
 
@@ -109,12 +99,10 @@ public class LibraryMapperTests : IDisposable
         var libraryMapper = new LibraryMapper(_process, dllFilePath);
 
         // Act
-
         libraryMapper.MapLibrary();
         libraryMapper.UnmapLibrary();
 
         // Assert
-
         Assert.Equal(0, libraryMapper.DllBaseAddress);
     }
 

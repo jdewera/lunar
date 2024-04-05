@@ -1,3 +1,3 @@
 ﻿namespace Lunar.Native.Enums;
 
-internal enum NtStatus { }
+internal enum NtStatus;

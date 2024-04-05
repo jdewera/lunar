@@ -21,7 +21,6 @@ internal class ImportDirectory : DataDirectoryBase
         for (var i = 0;; i++)
         {
             // Read the descriptor
-
             var descriptorOffset = DirectoryOffset + Unsafe.SizeOf<ImageImportDescriptor>() * i;
             var descriptor = MemoryMarshal.Read<ImageImportDescriptor>(ImageBytes.Span[descriptorOffset..]);
 
@@ -31,13 +30,11 @@ internal class ImportDirectory : DataDirectoryBase
             }
 
             // Read the name
-
             var nameOffset = RvaToOffset(descriptor.Name);
             var nameLength = ImageBytes.Span[nameOffset..].IndexOf(byte.MinValue);
             var name = Encoding.UTF8.GetString(ImageBytes.Span.Slice(nameOffset, nameLength));
 
             // Read the functions imported under the descriptor
-
             var offsetTableOffset = RvaToOffset(descriptor.FirstThunk);
             var thunkTableOffset = descriptor.OriginalFirstThunk == 0 ? offsetTableOffset : RvaToOffset(descriptor.OriginalFirstThunk);
             var functions = GetImportedFunctions(offsetTableOffset, thunkTableOffset);
@@ -49,12 +46,10 @@ internal class ImportDirectory : DataDirectoryBase
     private ImportedFunction GetImportedFunction(int thunk)
     {
         // Read the ordinal
-
         var ordinalOffset = RvaToOffset(thunk);
         var ordinal = MemoryMarshal.Read<short>(ImageBytes.Span[ordinalOffset..]);
 
         // Read the name
-
         var nameOffset = ordinalOffset + sizeof(short);
         var nameLength = ImageBytes.Span[nameOffset..].IndexOf(byte.MinValue);
         var name = Encoding.UTF8.GetString(ImageBytes.Span.Slice(nameOffset, nameLength));
@@ -69,7 +64,6 @@ internal class ImportDirectory : DataDirectoryBase
             if (Headers.PEHeader!.Magic == PEMagic.PE32)
             {
                 // Read the thunk
-
                 var thunkOffset = thunkTableOffset + sizeof(int) * i;
                 var thunk = MemoryMarshal.Read<int>(ImageBytes.Span[thunkOffset..]);
 
@@ -79,7 +73,6 @@ internal class ImportDirectory : DataDirectoryBase
                 }
 
                 // Check if the function is imported via ordinal
-
                 var functionOffset = offsetTableOffset + sizeof(int) * i;
 
                 if ((thunk & int.MinValue) != 0)
@@ -95,7 +88,6 @@ internal class ImportDirectory : DataDirectoryBase
             else
             {
                 // Read the thunk
-
                 var thunkOffset = thunkTableOffset + sizeof(long) * i;
                 var thunk = MemoryMarshal.Read<long>(ImageBytes.Span[thunkOffset..]);
 
@@ -105,7 +97,6 @@ internal class ImportDirectory : DataDirectoryBase
                 }
 
                 // Check if the function is imported via ordinal
-
                 var functionOffset = offsetTableOffset + sizeof(long) * i;
 
                 if ((thunk & long.MinValue) != 0)
@@ -115,7 +106,7 @@ internal class ImportDirectory : DataDirectoryBase
                 }
                 else
                 {
-                    yield return GetImportedFunction((int) thunk) with { Offset = functionOffset };
+                    yield return GetImportedFunction((int)thunk) with { Offset = functionOffset };
                 }
             }
         }

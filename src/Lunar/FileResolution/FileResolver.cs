@@ -20,7 +20,6 @@ internal class FileResolver
     internal string? ResolveFilePath(string fileName, ActivationContext activationContext)
     {
         // Check for .local redirection
-
         var dotLocalFilePath = Path.Combine(_processDirectoryPath, ".local", fileName);
 
         if (File.Exists(dotLocalFilePath))
@@ -29,7 +28,6 @@ internal class FileResolver
         }
 
         // Check for SxS redirection
-
         var sxsFilePath = activationContext.ProbeManifest(fileName);
 
         if (sxsFilePath is not null)
@@ -38,7 +36,6 @@ internal class FileResolver
         }
 
         // Search the DLL root directory
-
         if (_rootDirectoryPath is not null)
         {
             var rootDirectoryFilePath = Path.Combine(_rootDirectoryPath, fileName);
@@ -50,7 +47,6 @@ internal class FileResolver
         }
 
         // Search the directory from which the process was loaded
-
         var processDirectoryFilePath = Path.Combine(_processDirectoryPath, fileName);
 
         if (File.Exists(processDirectoryFilePath))
@@ -59,7 +55,6 @@ internal class FileResolver
         }
 
         // Search the System directory
-
         var systemDirectoryPath = _architecture == Architecture.X86 ? Environment.GetFolderPath(Environment.SpecialFolder.SystemX86) : Environment.SystemDirectory;
         var systemDirectoryFilePath = Path.Combine(systemDirectoryPath, fileName);
 
@@ -69,7 +64,6 @@ internal class FileResolver
         }
 
         // Search the Windows directory
-
         var windowsDirectoryFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), fileName);
 
         if (File.Exists(windowsDirectoryFilePath))
@@ -78,7 +72,6 @@ internal class FileResolver
         }
 
         // Search the current directory
-
         var currentDirectoryFilePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
         if (File.Exists(currentDirectoryFilePath))
@@ -87,7 +80,6 @@ internal class FileResolver
         }
 
         // Search the directories listed in the PATH environment variable
-
         return Environment.GetEnvironmentVariable("PATH")?.Split(";").Where(Directory.Exists).Select(directory => Path.Combine(directory, fileName)).FirstOrDefault(File.Exists);
     }
 }

@@ -24,7 +24,6 @@ internal class RelocationDirectory : DataDirectoryBase
         while (currentOffset < maxOffset)
         {
             // Read the relocation block
-
             var relocationBlock = MemoryMarshal.Read<ImageBaseRelocation>(ImageBytes.Span[currentOffset..]);
 
             if (relocationBlock.SizeOfBlock == 0)
@@ -37,10 +36,9 @@ internal class RelocationDirectory : DataDirectoryBase
             for (var i = 0; i < relocationCount; i++)
             {
                 // Read the relocation
-
                 var relocationOffset = currentOffset + Unsafe.SizeOf<ImageBaseRelocation>() + sizeof(short) * i;
                 var relocation = MemoryMarshal.Read<short>(ImageBytes.Span[relocationOffset..]);
-                var type = (ushort) relocation >> 12;
+                var type = (ushort)relocation >> 12;
                 var offset = relocation & 0xFFF;
 
                 yield return new Relocation((RelocationType) type, RvaToOffset(relocationBlock.VirtualAddress) + offset);

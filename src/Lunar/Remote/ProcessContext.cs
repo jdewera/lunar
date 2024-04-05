@@ -24,7 +24,7 @@ internal class ProcessContext
     internal Process Process { get; }
 
     private readonly ApiSetMap _apiSetMap;
-    private readonly IDictionary<string, Module> _moduleCache;
+    private readonly Dictionary<string, Module> _moduleCache;
     private readonly SymbolLookup _symbolLookup;
 
     internal ProcessContext(Process process)
@@ -43,12 +43,12 @@ internal class ProcessContext
 
         if (Architecture == Architecture.X86)
         {
-            var descriptor = new CallDescriptor<int>(routineAddress, callingConvention, Array.ConvertAll(arguments, argument => (int) argument), null);
+            var descriptor = new CallDescriptor<int>(routineAddress, callingConvention, Array.ConvertAll(arguments, argument => (int)argument), null);
             shellcodeBytes = Assembler.AssembleCall32(descriptor);
         }
         else
         {
-            var descriptor = new CallDescriptor<long>(routineAddress, callingConvention, Array.ConvertAll(arguments, argument => (long) argument), null);
+            var descriptor = new CallDescriptor<long>(routineAddress, callingConvention, Array.ConvertAll(arguments, argument => (long)argument), null);
             shellcodeBytes = Assembler.AssembleCall64(descriptor);
         }
 
@@ -66,25 +66,23 @@ internal class ProcessContext
 
             if (Architecture == Architecture.X86)
             {
-                var descriptor = new CallDescriptor<int>(routineAddress, callingConvention, Array.ConvertAll(arguments, argument => (int) argument), returnAddress);
+                var descriptor = new CallDescriptor<int>(routineAddress, callingConvention, Array.ConvertAll(arguments, argument => (int)argument), returnAddress);
                 shellcodeBytes = Assembler.AssembleCall32(descriptor);
             }
             else
             {
-                var descriptor = new CallDescriptor<long>(routineAddress, callingConvention, Array.ConvertAll(arguments, argument => (long) argument), returnAddress);
+                var descriptor = new CallDescriptor<long>(routineAddress, callingConvention, Array.ConvertAll(arguments, argument => (long)argument), returnAddress);
                 shellcodeBytes = Assembler.AssembleCall64(descriptor);
             }
 
             ExecuteShellcode(shellcodeBytes);
-
-            // Read the return value
 
             if (typeof(T) != typeof(nint))
             {
                 return Process.ReadStruct<T>(returnAddress);
             }
 
-            var pointer = Architecture == Architecture.X86 ? Process.ReadStruct<int>(returnAddress) : (nint) Process.ReadStruct<long>(returnAddress);
+            var pointer = Architecture == Architecture.X86 ? Process.ReadStruct<int>(returnAddress) : (nint)Process.ReadStruct<long>(returnAddress);
             return Unsafe.As<nint, T>(ref pointer);
         }
         finally
@@ -152,7 +150,6 @@ internal class ProcessContext
     private void ExecuteShellcode(Span<byte> shellcodeBytes)
     {
         // Execute the shellcode in the process
-
         var shellcodeAddress = Process.AllocateBuffer(shellcodeBytes.Length, ProtectionType.ExecuteRead);
 
         try
@@ -189,7 +186,6 @@ internal class ProcessContext
         }
 
         // Query the process for its module address list
-
         var moduleAddressListBytes = (stackalloc byte[nint.Size]);
         var moduleType = Architecture == Architecture.X86 ? ModuleType.X86 : ModuleType.X64;
 
@@ -201,7 +197,6 @@ internal class ProcessContext
         if (sizeNeeded > moduleAddressListBytes.Length)
         {
             // Reallocate the module address buffer
-
             moduleAddressListBytes = sizeNeeded <= 1024 ? stackalloc byte[sizeNeeded] : new byte[sizeNeeded];
 
             if (!Kernel32.EnumProcessModulesEx(Process.SafeHandle, out moduleAddressListBytes[0], moduleAddressListBytes.Length, out sizeNeeded, moduleType))
@@ -211,7 +206,6 @@ internal class ProcessContext
         }
 
         // Search for the module
-
         var moduleFilePathBytes = (stackalloc byte[Encoding.Unicode.GetMaxByteCount(Constants.MaxPath)]);
 
         foreach (var address in MemoryMarshal.Cast<byte, nint>(moduleAddressListBytes))
@@ -219,7 +213,6 @@ internal class ProcessContext
             moduleFilePathBytes.Clear();
 
             // Retrieve the module file path
-
             if (!Kernel32.GetModuleFileNameEx(Process.SafeHandle, address, out moduleFilePathBytes[0], Encoding.Unicode.GetCharCount(moduleFilePathBytes)))
             {
                 throw new Win32Exception();
@@ -256,7 +249,7 @@ internal class ProcessContext
 
             ExportedFunction? forwardedFunction;
 
-            if (forwardedData[1].StartsWith("#"))
+            if (forwardedData[1].StartsWith('#'))
             {
                 var functionOrdinal = int.Parse(forwardedData[1].Replace("#", string.Empty));
                 forwardedFunction = peImage.ExportDirectory.GetExportedFunction(functionOrdinal);

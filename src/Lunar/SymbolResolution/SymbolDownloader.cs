@@ -15,7 +15,6 @@ internal static class SymbolDownloader
         var pdbData = peReader.ReadCodeViewDebugDirectoryData(codeViewEntry);
 
         // Check if the correct PDB version is already cached to avoid duplicate downloads
-
         var cacheDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Lunar", "Dependencies");
         var cacheDirectory = Directory.CreateDirectory(cacheDirectoryPath);
         var pdbFilePath = Path.Combine(cacheDirectory.FullName, $"{pdbData.Path.Replace(".pdb", string.Empty)}-{pdbData.Guid:N}.pdb");
@@ -27,7 +26,6 @@ internal static class SymbolDownloader
         }
 
         // Delete any outdated PDB versions
-
         foreach (var file in cacheDirectory.EnumerateFiles().Where(file => file.Name.StartsWith(pdbData.Path)))
         {
             try
@@ -42,7 +40,6 @@ internal static class SymbolDownloader
         }
 
         // Download the PDB from the Microsoft symbol server
-
         using var httpClient = new HttpClient();
         using var response = httpClient.GetAsync(new Uri($"https://msdl.microsoft.com/download/symbols/{pdbData.Path}/{pdbData.Guid:N}{pdbData.Age}/{pdbData.Path}"), HttpCompletionOption.ResponseHeadersRead).GetAwaiter().GetResult();
 
@@ -75,7 +72,7 @@ internal static class SymbolDownloader
 
             var progressPercentage = bytesRead / response.Content.Headers.ContentLength.Value * 100;
             var progress = progressPercentage / 2;
-            Console.Write($"\rDownloading required symbol file: {pdbData.Path} - [{new string('=', (int) progress)}{new string(' ', 50 - (int) progress)}] - {(int) progressPercentage}%");
+            Console.Write($"\rDownloading required symbol file: {pdbData.Path} - [{new string('=', (int)progress)}{new string(' ', 50 - (int)progress)}] - {(int)progressPercentage}%");
 
             fileStream.Write(copyBuffer, 0, blockSize);
         }
